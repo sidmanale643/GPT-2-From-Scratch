@@ -116,13 +116,7 @@ class GPT2(nn.Module):
 model = GPT2(config)
 print(model)
 
+#Sample Inputs
 batch_size = 3
-
 input = torch.randint(0, config['vocab_size'], (batch_size, config['seq_len']))
-position_ids = torch.arange(0, config['seq_len']).unsqueeze(0).expand(batch_size, -1)
 
-tokenizer = tiktoken.encoding_for_model("gpt2")
-
-print(input.shape)
-out = model(input)
-print(out)
