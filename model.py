@@ -1,8 +1,9 @@
-from altair import sample
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import math
-import tiktoken
+
+torch.set_float32_matmul_precision('high')
 
 class Norm(nn.Module):
     def __init__(self , d_model):
@@ -40,13 +41,14 @@ class MHA(nn.Module):
         Q = self.w_q(Q)
         K = self.w_k(K)
         V = self.w_v(V)
+        
         Q = Q.view(b , n  , self.n_heads , self.d_k).transpose(1,2)
         K = K.view(b , n  , self.n_heads , self.d_k).transpose(1,2)
         V = V.view(b , n  , self.n_heads , self.d_k).transpose(1,2)
         
         attention_scores = torch.matmul(Q , K.transpose(-2 , -1)) / math.sqrt(self.d_k)
         
-        mask = torch.tril(torch.ones(n , n).bool()).unsqueeze(0).unsqueeze(0)
+        mask = torch.tril(torch.ones(n , n).bool()).unsqueeze(0).unsqueeze(0).to(Q.device)
         attention_scores = attention_scores.masked_fill(mask == 0 , -1e9)
         attention_weights = torch.softmax(attention_scores , dim = -1)
         attention_out =  torch.matmul(attention_weights , V)
@@ -93,7 +95,7 @@ class Decoder(nn.Module):
     def forward(self , x):
         
         embeddings = self.embeddings(x)
-        position_ids = torch.arange(0, x.size(1)).unsqueeze(0).expand(x.size(0), -1)
+        position_ids = torch.arange(0, x.size(1)).unsqueeze(0).expand(x.size(0), -1).to(x.device)
         pos_embeddings = self.pos(position_ids)
         decoder_in = embeddings + pos_embeddings
         for layer in self.layers:
@@ -107,16 +109,15 @@ class GPT2(nn.Module):
         super().__init__()
         
         self.decoder =  Decoder(config['d_model'], config['n_heads'], config['seq_len'], config['vocab_size'], config['dropout'], config['n_blocks'])
-        self.fc = nn.Linear(config['d_model'] , config['vocab_size'] )
-    
-    def forward(self , x):
+        self.fc = nn.Linear(config['d_model'] , config['vocab_size'] , bias = False )
+        self.decoder.embeddings.embedding.weight = self.fc.weight
+        
+    def forward(self , x , targets = None):
         logits = self.fc(self.decoder(x))
-        return logits 
+        loss = None
+        if targets is not None:
+            loss = F.cross_entropy(logits.view(-1 , logits.size(-1)) , targets.view(-1))
+        return logits  , loss
+
+
     
-model = GPT2(config)
-print(model)
-
-#Sample Inputs
-batch_size = 3
-input = torch.randint(0, config['vocab_size'], (batch_size, config['seq_len']))
-
