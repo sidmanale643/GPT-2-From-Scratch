@@ -24,3 +24,9 @@ The GPT-2 model is based on the transformer architecture, specifically designed 
 ## Implementation Details
 
 This project implements the GPT-2 model from scratch, providing a deep understanding of its inner workings. The implementation closely follows the original architecture while offering customization options.
+
+## Resources
+
+- Andreij Karpathy Lectures - https://www.youtube.com/watch?v=VMj-3S1tku0&list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ&pp=iAQB
+- Sebastian Raschka - https://github.com/rasbt/LLMs-from-scratch
+- Original GPT-2 Paper - https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf
