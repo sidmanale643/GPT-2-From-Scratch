@@ -30,3 +30,4 @@ This project implements the GPT-2 model from scratch, providing a deep understan
 - Andreij Karpathy Lectures - https://www.youtube.com/watch?v=VMj-3S1tku0&list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ&pp=iAQB
 - Sebastian Raschka - https://github.com/rasbt/LLMs-from-scratch
 - Original GPT-2 Paper - https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf
+- Umar Jamil YouTube - https://www.youtube.com/watch?v=ISNdQcPhsts&t=4760s&pp=ygUKdW1hciBqYW1pbA%3D%3D
